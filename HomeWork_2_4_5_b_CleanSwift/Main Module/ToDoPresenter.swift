@@ -6,11 +6,9 @@
 //
 
 import UIKit
-import RealmSwift
 
 protocol ToDoPresentationLogic {
     func presentTask(_ responce: ToDoModels.Something.Response)
-//    func presentTaskLists(_ responce: Results<PersistanceRealm>)
 }
 
 final class ToDoPresenter: ToDoPresentationLogic {
@@ -25,12 +23,13 @@ final class ToDoPresenter: ToDoPresentationLogic {
 
   // MARK: - Presentation Logic
     func presentTask(_ responce: ToDoModels.Something.Response) {
-        let viewModel: ToDoModels.Something.ViewModel = .init(task: responce.myTask)
+
+        var viewModel = ToDoModels.Something.ViewModel(task: [])
+        
+        for item in responce.toDo {
+            viewModel.task.append(item.name)
+        }
+        
         viewController?.displayData(viewModel)
     }
-//    func presentTaskLists(_ responce: Results<PersistanceRealm>) {
-//
-//    }
-
-  //
 }

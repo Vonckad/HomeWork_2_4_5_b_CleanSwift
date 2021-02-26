@@ -11,27 +11,29 @@ import RealmSwift
 enum ToDoModels {
   
   // MARK: - Something
-  
+    
   enum Something {
     struct Request {
         var taskName: String
     }
     
     struct Response {
-        var myTask: String
+        var myTask: String!
 
-//        var realm: Realm!
-//        var toDo: Results<PersistanceRealm> {
-//            get { return realm.objects(PersistanceRealm.self)}
-//        }
+        let realm = try! Realm()
+        
+        var toDo: Results<PersistanceRealm> {
+            get { return realm.objects(PersistanceRealm.self)}
+        }
     }
     
     struct ViewModel {
-        var task: String
+       
+        var task: [String]
     }
   }
 }
 
-class PersistanceRealm: Object { // или его нужно в Responce положить?
+class PersistanceRealm: Object {
     @objc dynamic var name = ""
 }

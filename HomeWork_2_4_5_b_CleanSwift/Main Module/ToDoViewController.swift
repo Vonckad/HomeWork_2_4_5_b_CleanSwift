@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import RealmSwift
 
 protocol ToDoDisplayLogic: AnyObject {
     func displayData(_ viewModel: ToDoModels.Something.ViewModel)
@@ -24,13 +23,13 @@ final class ToDoViewController: UIViewController {
     //
   
   // MARK: - Public Properties
-
+    
   var interactor: ToDoBusinessLogic?
   var router: (ToDoRoutingLogic & ToDoDataPassing)?
 
   // MARK: - Private Properties
-//    private var realm: Realm!
-    private var toDoList = [ToDoModels.Something.ViewModel]()
+    
+    private var toDoList = ToDoModels.Something.ViewModel(task: [])
     
   //
 
@@ -47,7 +46,7 @@ final class ToDoViewController: UIViewController {
   }
 
   private func setup() {
-//    realm = try! Realm()
+
     let interactor = ToDoInteractor()
     let presenter = ToDoPresenter()
     let router = ToDoRouter()
@@ -75,7 +74,8 @@ final class ToDoViewController: UIViewController {
   // MARK: - Private Methods
 
   private func configure() {
-    
+//    myTableView.rowHeight = 60
+    interactor?.load()
     NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil) { (nc) in
         self.bottomAnchorTextField.constant = 320
         self.leftAnchorTextField.constant = 8
@@ -100,19 +100,24 @@ final class ToDoViewController: UIViewController {
 extension ToDoViewController: ToDoDisplayLogic {
     
     func displayData(_ viewModel: ToDoModels.Something.ViewModel) {
-        toDoList.append(viewModel)
+        toDoList = viewModel
         self.myTableView.reloadData()
     }
 }
 
 extension ToDoViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        interactor?.deleteTask(index: indexPath.row)
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return toDoList.count
+        return toDoList.task.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = toDoList[indexPath.row].task
+        cell.textLabel?.text = toDoList.task[indexPath.row]
         cell.layer.borderWidth = 10
         cell.layer.borderColor = UIColor.systemGray4.cgColor
         cell.layer.cornerRadius = 20
@@ -128,7 +133,7 @@ extension ToDoViewController: UITextFieldDelegate {
         
         if let text = self.myTextField.text {
             let newTask: ToDoModels.Something.Request = .init(taskName: text)
-            interactor?.fetchTask(newTask: newTask)
+            interactor?.addTask(newTask: newTask)
             }
         return self.myTextField.resignFirstResponder()
     }

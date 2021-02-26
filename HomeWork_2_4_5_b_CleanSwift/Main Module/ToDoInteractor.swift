@@ -6,11 +6,11 @@
 //
 
 import Foundation
-import RealmSwift
 
 protocol ToDoBusinessLogic {
-    func fetchTask(newTask: ToDoModels.Something.Request)
-//    func load()
+    func addTask(newTask: ToDoModels.Something.Request)
+    func deleteTask(index: Int) // не знаю, правильно ли так передавать индекс выбранной ячейки в CleanSwift
+    func load()
 }
 
 protocol ToDoDataStore {
@@ -25,30 +25,37 @@ final class ToDoInteractor: ToDoBusinessLogic, ToDoDataStore {
   lazy var worker: ToDoWorkingLogic = ToDoWorker()
 
   // MARK: - Private Properties
-    
+
   //
 
   // MARK: - Business Logic
-    func fetchTask(newTask: ToDoModels.Something.Request) {
+    func addTask(newTask: ToDoModels.Something.Request) {
        
         let responce = ToDoModels.Something.Response(myTask: newTask.taskName)
+
+        let item = PersistanceRealm()
+        item.name = newTask.taskName
+
+        try! responce.realm.write {
+                responce.realm.add(item)
+            }
+        
         presenter?.presentTask(responce)
-
-//        let item = PersistanceRealm()
-//        item.name = newTask.taskName
-//
-//        try! responce.realm.write {
-//                responce.realm.add(item)
-//            }
-//        presenter?.presentTaskLists(responce.toDo)
-
         
     }
     
-//    func load() {
-//        let responce = ToDoModels.Something.Response(myTask: "")
-//        presenter?.presentTaskLists(responce.toDo)
-//    }
-    
+    func deleteTask(index: Int) {
+        let responce = ToDoModels.Something.Response()
+        
+        try! responce.realm.write({
+            responce.realm.delete(responce.toDo[index])
+        })
+        presenter?.presentTask(responce)
+    }
+
+    func load() {
+        let responce = ToDoModels.Something.Response()
+        presenter?.presentTask(responce)
+    }
   //
 }
