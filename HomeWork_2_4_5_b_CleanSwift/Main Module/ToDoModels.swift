@@ -15,6 +15,7 @@ enum ToDoModels {
   enum Something {
     struct Request {
         var taskName: String
+        var iD: Int
     }
     
     struct Response {

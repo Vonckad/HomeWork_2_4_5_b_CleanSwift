@@ -68,13 +68,21 @@ final class ToDoViewController: UIViewController {
   }
 
   // MARK: - Public Methods
-  
+    func foundIdTask(index: Int) {
+       
+        let toDo = ToDoModels.Something.Response()
+        
+        if toDo.toDo[index].name == toDoList.task[index] {
+            let idTask: ToDoModels.Something.Request = .init(taskName: toDoList.task[index], iD: index)
+            interactor?.deleteTask(idTask: idTask)
+        }
+    }
   //
 
   // MARK: - Private Methods
 
   private func configure() {
-//    myTableView.rowHeight = 60
+
     interactor?.load()
     NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: nil) { (nc) in
         self.bottomAnchorTextField.constant = 320
@@ -91,7 +99,7 @@ final class ToDoViewController: UIViewController {
   }
   
   // MARK: - UI Actions
-  
+    
   //
 }
 
@@ -108,7 +116,7 @@ extension ToDoViewController: ToDoDisplayLogic {
 extension ToDoViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        interactor?.deleteTask(index: indexPath.row)
+        foundIdTask(index: indexPath.row)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -132,7 +140,7 @@ extension ToDoViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         if let text = self.myTextField.text {
-            let newTask: ToDoModels.Something.Request = .init(taskName: text)
+            let newTask: ToDoModels.Something.Request = .init(taskName: text, iD: toDoList.task.endIndex + 1)
             interactor?.addTask(newTask: newTask)
             }
         return self.myTextField.resignFirstResponder()

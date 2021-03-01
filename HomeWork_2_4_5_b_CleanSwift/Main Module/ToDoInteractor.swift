@@ -9,7 +9,7 @@ import Foundation
 
 protocol ToDoBusinessLogic {
     func addTask(newTask: ToDoModels.Something.Request)
-    func deleteTask(index: Int) // не знаю, правильно ли так передавать индекс выбранной ячейки в CleanSwift
+    func deleteTask(idTask: ToDoModels.Something.Request)
     func load()
 }
 
@@ -31,7 +31,7 @@ final class ToDoInteractor: ToDoBusinessLogic, ToDoDataStore {
   // MARK: - Business Logic
     func addTask(newTask: ToDoModels.Something.Request) {
        
-        let responce = ToDoModels.Something.Response(myTask: newTask.taskName)
+        let responce = ToDoModels.Something.Response()
 
         let item = PersistanceRealm()
         item.name = newTask.taskName
@@ -44,11 +44,11 @@ final class ToDoInteractor: ToDoBusinessLogic, ToDoDataStore {
         
     }
     
-    func deleteTask(index: Int) {
+    func deleteTask(idTask: ToDoModels.Something.Request) {
         let responce = ToDoModels.Something.Response()
-        
+       
         try! responce.realm.write({
-            responce.realm.delete(responce.toDo[index])
+            responce.realm.delete(responce.toDo[idTask.iD])
         })
         presenter?.presentTask(responce)
     }
