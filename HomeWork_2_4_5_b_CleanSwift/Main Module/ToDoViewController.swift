@@ -68,15 +68,7 @@ final class ToDoViewController: UIViewController {
   }
 
   // MARK: - Public Methods
-    func foundIdTask(index: Int) {
-       
-        let toDo = ToDoModels.Something.Response()
-        
-        if toDo.toDo[index].name == toDoList.task[index] {
-            let idTask: ToDoModels.Something.Request = .init(taskName: toDoList.task[index], iD: index)
-            interactor?.deleteTask(idTask: idTask)
-        }
-    }
+   
   //
 
   // MARK: - Private Methods
@@ -108,7 +100,7 @@ final class ToDoViewController: UIViewController {
 extension ToDoViewController: ToDoDisplayLogic {
     
     func displayData(_ viewModel: ToDoModels.Something.ViewModel) {
-        toDoList = viewModel
+        toDoList.task = viewModel.task
         self.myTableView.reloadData()
     }
 }
@@ -116,7 +108,8 @@ extension ToDoViewController: ToDoDisplayLogic {
 extension ToDoViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        foundIdTask(index: indexPath.row)
+        
+        interactor?.removeTask(task: toDoList.task[indexPath.row], completed: { })
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -125,7 +118,7 @@ extension ToDoViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = toDoList.task[indexPath.row]
+        cell.textLabel?.text = toDoList.task[indexPath.row].task
         cell.layer.borderWidth = 10
         cell.layer.borderColor = UIColor.systemGray4.cgColor
         cell.layer.cornerRadius = 20
@@ -140,7 +133,7 @@ extension ToDoViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         
         if let text = self.myTextField.text {
-            let newTask: ToDoModels.Something.Request = .init(taskName: text, iD: toDoList.task.endIndex + 1)
+            let newTask: ToDoModels.Something.Request = .init(taskName: text, iD: Int(arc4random()))
             interactor?.addTask(newTask: newTask)
             }
         return self.myTextField.resignFirstResponder()

@@ -19,22 +19,23 @@ enum ToDoModels {
     }
     
     struct Response {
-        var myTask: String!
-
         let realm = try! Realm()
-        
         var toDo: Results<PersistanceRealm> {
             get { return realm.objects(PersistanceRealm.self)}
         }
     }
     
     struct ViewModel {
-       
-        var task: [String]
+        var task: [Task] = []
+        struct Task {
+            var task: String
+            var identifier: Int
+      }
     }
   }
 }
 
 class PersistanceRealm: Object {
     @objc dynamic var name = ""
+    @objc dynamic var identifier = 0
 }

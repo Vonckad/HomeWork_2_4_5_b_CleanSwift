@@ -8,7 +8,7 @@
 import UIKit
 
 protocol ToDoPresentationLogic {
-    func presentTask(_ responce: ToDoModels.Something.Response)
+    func presentRealmTask(_ response: ToDoModels.Something.Response)
 }
 
 final class ToDoPresenter: ToDoPresentationLogic {
@@ -22,14 +22,15 @@ final class ToDoPresenter: ToDoPresentationLogic {
   //
 
   // MARK: - Presentation Logic
-    func presentTask(_ responce: ToDoModels.Something.Response) {
 
-        var viewModel = ToDoModels.Something.ViewModel(task: [])
+    func presentRealmTask(_ response: ToDoModels.Something.Response) {
         
-        for item in responce.toDo {
-            viewModel.task.append(item.name)
+        var viewModel = ToDoModels.Something.ViewModel()
+        
+        for item in response.toDo {
+            let reTask = ToDoModels.Something.ViewModel.Task(task: item.name, identifier: item.identifier)
+            viewModel.task.append(reTask)
+            viewController?.displayData(viewModel)
         }
-        
-        viewController?.displayData(viewModel)
     }
 }
